@@ -17,6 +17,7 @@ class CordappController : Controller() {
     private val cordappDir: Path = jvm.applicationDir.resolve(NodeConfig.cordappDirName)
     private val bankOfCorda: Path = cordappDir.resolve("bank-of-corda.jar")
     private val finance: Path = cordappDir.resolve("corda-finance.jar")
+    private val letterOfCredit: Path = cordappDir.resolve("letter-of-credit.jar")
 
     /**
      * Install any built-in cordapps that this node requires.
@@ -34,6 +35,10 @@ class CordappController : Controller() {
         if (config.nodeConfig.issuableCurrencies.isNotEmpty() && bankOfCorda.exists()) {
             bankOfCorda.copyToDirectory(config.cordappsDir, StandardCopyOption.REPLACE_EXISTING)
             log.info("Installed 'Bank of Corda' cordapp")
+        }
+        if (letterOfCredit.exists()) {
+            letterOfCredit.copyToDirectory(config.cordappsDir, StandardCopyOption.REPLACE_EXISTING)
+            log.info("Installed 'Letter of Credit' cordapp")
         }
     }
 

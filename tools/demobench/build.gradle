@@ -141,6 +141,10 @@ distributions {
                 into 'cordapps'
                 fileMode = 0444
             }
+            into('cordapps') {
+                from 'libs/letter-of-credit.jar'
+                fileMode = 0444
+            }
         }
     }
 }
