@@ -33,7 +33,7 @@ class ResolveTransactionsFlow(private val txHashes: Set<SecureHash>,
     }
 
     companion object {
-        private fun dependencyIDs(stx: SignedTransaction) = stx.inputs.map { it.txhash }.toSet()
+        private fun dependencyIDs(stx: SignedTransaction) = stx.inputs.map { it.txhash }.toSet() + stx.references.map { it.txhash }.toSet()
 
         /**
          * Topologically sorts the given transactions such that dependencies are listed before dependers. */
@@ -42,7 +42,7 @@ class ResolveTransactionsFlow(private val txHashes: Set<SecureHash>,
             // Construct txhash -> dependent-txs map
             val forwardGraph = HashMap<SecureHash, HashSet<SignedTransaction>>()
             transactions.forEach { stx ->
-                stx.inputs.forEach { (txhash) ->
+                (stx.references + stx.inputs).forEach { (txhash) ->
                     // Note that we use a LinkedHashSet here to make the traversal deterministic (as long as the input list is)
                     forwardGraph.getOrPut(txhash) { LinkedHashSet() }.add(stx)
                 }
@@ -144,8 +144,8 @@ class ResolveTransactionsFlow(private val txHashes: Set<SecureHash>,
             for (stx in downloads)
                 check(resultQ.putIfAbsent(stx.id, stx) == null)   // Assert checks the filter at the start.
 
-            // Add all input states to the work queue.
-            val inputHashes = downloads.flatMap { it.inputs }.map { it.txhash }
+            // Add all input states and reference input states to the work queue.
+            val inputHashes = downloads.flatMap { it.inputs + it.references }.map { it.txhash }
             nextRequests.addAll(inputHashes)
 
             limitCounter = limitCounter exactAdd nextRequests.size
