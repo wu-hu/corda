@@ -43,13 +43,14 @@ import java.util.function.Predicate
 class WireTransaction(componentGroups: List<ComponentGroup>, val privacySalt: PrivacySalt = PrivacySalt()) : TraversableTransaction(componentGroups) {
 
     @Deprecated("Required only in some unit-tests and for backwards compatibility purposes.", ReplaceWith("WireTransaction(val componentGroups: List<ComponentGroup>, override val privacySalt: PrivacySalt)"), DeprecationLevel.WARNING)
-    @JvmOverloads constructor(inputs: List<StateRef>,
-                              attachments: List<SecureHash>,
-                              outputs: List<TransactionState<ContractState>>,
-                              commands: List<Command<*>>,
-                              notary: Party?,
-                              timeWindow: TimeWindow?,
-                              privacySalt: PrivacySalt = PrivacySalt()
+    @JvmOverloads constructor(
+            inputs: List<StateRef>,
+            attachments: List<SecureHash>,
+            outputs: List<TransactionState<ContractState>>,
+            commands: List<Command<*>>,
+            notary: Party?,
+            timeWindow: TimeWindow?,
+            privacySalt: PrivacySalt = PrivacySalt()
     ) : this(createComponentGroups(inputs, outputs, commands, attachments, notary, timeWindow), privacySalt)
 
     init {
