@@ -1,3 +1,7 @@
+# SGX Infrastructure design
+
+.. important:: This design document describes a feature of Corda Enterprise.
+
 This document is intended as a design description of the infrastructure around the hosting of SGX enclaves, interaction
 with enclaves and storage of encrypted data. It assumes basic knowledge of SGX concepts, and some knowledge of
 Kubernetes for parts specific to that.
