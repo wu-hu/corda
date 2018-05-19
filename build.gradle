@@ -190,6 +190,8 @@ allprojects {
     }
 
     tasks.withType(Test) {
+        failFast = true
+
         // Prevent the project from creating temporary files outside of the build directory.
         systemProperties['java.io.tmpdir'] = buildDir
 
