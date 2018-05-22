@@ -58,8 +58,7 @@ interface NodeConfiguration : NodeSSLConfiguration {
     val extraNetworkMapKeys: List<UUID>
     val tlsCertCrlDistPoint: URL?
     val tlsCertCrlIssuer: String?
-
-    val h2Settings: NodeH2Settings?
+    val effectiveH2Settings: NodeH2Settings?
     fun validate(): List<String>
 
     companion object {
@@ -168,21 +167,14 @@ data class NodeConfigurationImpl(
         override val attachmentCacheBound: Long = NodeConfiguration.defaultAttachmentCacheBound,
         override val extraNetworkMapKeys: List<UUID> = emptyList(),
         // do not use or remove (breaks DemoBench together with rejection of unknown configuration keys during parsing)
-        private val h2port: Int?,
-        override val h2Settings: NodeH2Settings? = defaultH2Settings(h2port),
+        private val h2port: Int? = null,
+        private val h2Settings: NodeH2Settings? = null,
         // do not use or remove (used by Capsule)
         private val jarDirs: List<String> = emptyList()
 ) : NodeConfiguration {
     companion object {
         private val logger = loggerFor<NodeConfigurationImpl>()
-        private fun defaultH2Settings(h2port: Int?): NodeH2Settings? {
-            return when {
-                h2port != null ->  {
-                    NodeH2Settings(address = NetworkHostAndPort("localhost", h2port))
-                }
-                else -> null
-            }
-        }
+
     }
 
     override val rpcOptions: NodeRpcOptions = initialiseRpcOptions(rpcAddress, rpcSettings, BrokerRpcSslOptions(baseDirectory / "certificates" / "nodekeystore.jks", keyStorePassword))
@@ -222,6 +214,15 @@ data class NodeConfigurationImpl(
         errors += validateDevModeOptions()
         errors += validateRpcOptions(rpcOptions)
         errors += validateTlsCertCrlConfig()
+        errors += validateH2Settings()
+        return errors
+    }
+
+    private fun validateH2Settings(): List<String> {
+        val errors = mutableListOf<String>()
+        if (h2port != null && h2Settings != null) {
+            errors += "Cannot specify both 'h2port' and 'h2Settings' in configuration"
+        }
         return errors
     }
 
@@ -250,6 +251,11 @@ data class NodeConfigurationImpl(
     override val attachmentContentCacheSizeBytes: Long
         get() = attachmentContentCacheSizeMegaBytes?.MB ?: super.attachmentContentCacheSizeBytes
 
+    override val effectiveH2Settings: NodeH2Settings?
+        get() = when {
+            h2port != null -> NodeH2Settings(address = NetworkHostAndPort(host="localhost", port=h2port))
+            else -> h2Settings
+        }
 
     init {
         // This is a sanity feature do not remove.
