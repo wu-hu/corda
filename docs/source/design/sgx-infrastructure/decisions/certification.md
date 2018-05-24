@@ -66,4 +66,4 @@ we try to establish the chain of trust during EPID provisioning and reuse it lat
 
 ## Recommendation and justification
 
-Proceed with Option C. This is the most readily available and flexible option.
+Proceed with Option B. This is the most readily available and flexible option.
