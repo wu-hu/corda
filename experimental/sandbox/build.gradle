@@ -2,38 +2,70 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.asm_version = '5.1'
-    ext.logback_version = '1.2.3'
+    ext.sandbox_version = '1.0'
+    ext.asm_version = '6.2'
+    ext.fast_classpath_scanner_version = '2.18.1'
+    ext.picocli_version = '3.0.0-beta-2'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }
 
 dependencies {
-    // Asm: bytecode manipulation library.
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    // ASM: byte code manipulation library
     compile "org.ow2.asm:asm:$asm_version"
     compile "org.ow2.asm:asm-tree:$asm_version"
     compile "org.ow2.asm:asm-util:$asm_version"
     compile "org.ow2.asm:asm-commons:$asm_version"
 
-    // JOptSimple: command line option parsing
-    compile "net.sf.jopt-simple:jopt-simple:$jopt_simple_version"
+    // Classpath scanner
+    compile "io.github.lukehutch:fast-classpath-scanner:$fast_classpath_scanner_version"
 
-    // Simple Logging Facade: makes the code independent of the chosen logging framework.
-    compile "org.slf4j:slf4j-api:$slf4j_version"
-    compile "ch.qos.logback:logback-classic:$logback_version"
+    // CLI utilities
+    compile "info.picocli:picocli:$picocli_version"
 
+    // Test utilities
     testCompile "junit:junit:$junit_version"
+    testCompile "org.assertj:assertj-core:$assertj_version"
 }
 
-task standaloneJar(type: Jar) {
-    // Create a fat jar by packing all deps into the output
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
     }
-    with jar
+    exclude "META-INF/*.DSA"
+    exclude "META-INF/*.RSA"
+    exclude "META-INF/*.SF"
+    exclude "META-INF/*.MF"
     manifest {
         attributes(
-                'Main-Class': 'net.corda.sandbox.tools.SandboxCreator',
-                'Automatic-Module-Name': 'net.corda.sandbox.creator'
+                'Main-Class': 'net.corda.sandbox.tools.cli.Program',
+                'Automatic-Module-Name': 'net.corda.sandbox'
         )
     }
-    archiveName "corda-sandbox-creator-${version}.jar"
+    archiveName "corda-djvm-${sandbox_version}.jar"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
