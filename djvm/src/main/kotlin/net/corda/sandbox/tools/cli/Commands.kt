@@ -5,7 +5,8 @@ import picocli.CommandLine.Command
 
 @Command(
         name = "djvm",
-        version = ["Corda DJVM v1.0"],
+        versionProvider = VersionProvider::class,
+        description = ["JVM for running programs in a deterministic sandbox."],
         mixinStandardHelpOptions = true,
         subcommands = [
             BuildCommand::class,
