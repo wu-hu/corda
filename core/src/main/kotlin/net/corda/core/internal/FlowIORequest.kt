@@ -11,6 +11,7 @@ import java.time.Instant
 /**
  * A [FlowIORequest] represents an IO request of a flow when it suspends. It is persisted in checkpoints.
  */
+// DOCSTART FlowIORequest
 sealed class FlowIORequest<out R : Any> {
     /**
      * Send messages to sessions.
@@ -88,3 +89,4 @@ sealed class FlowIORequest<out R : Any> {
      */
     data class ExecuteAsyncOperation<T : Any>(val operation: FlowAsyncOperation<T>) : FlowIORequest<T>()
 }
+// DOCSEND FlowIORequest
