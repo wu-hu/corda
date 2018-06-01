@@ -26,18 +26,21 @@ For ``ValidatingNotaryService``, it is:
 
     notary : { validating : true }
 
-Setting up a Raft notary is currently slightly more involved and is not recommended for prototyping purposes. There is
-work in progress to simplify it. To see it in action, however, you can try out the :ref:`notary-demo`.
-
-Use the ``--bootstrap-raft-cluster`` command line argument when starting the first node of a notary cluster for the first
-time. When the flag is set, the node will act as a seed for the cluster that other members can join.
-
 Running a distributed notary service
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Set ``notary.serviceLegalIdentity`` on all member nodes of the notary cluster in ``node.conf``.
 
 For development purposes, you can use the bootstrapper to configure your cluster. 
 
 For production, use the ``registration-tool`` to register the notary cluster identity with the doorman. Go through the
-initial registration with all the notary cluster members. Finally, before starting the node, use the ``registraton-tool``
-to copy the service identity into the keystores of the notary nodes.
+initial registration with all the notary cluster members. Finally, before starting the nodes, use the ``registraton-tool``
+to copy the service identity into the keystores of the notary nodes. You are now ready to startup your cluster.
+
+Raft
+^^^^
+
+To see it in action, you can try out the :ref:`notary-demo`.
+
+Use the ``--bootstrap-raft-cluster`` command line argument when starting the first node of a notary cluster for the first
+time. When the flag is set, the node will act as a seed for the cluster that other members can join.
