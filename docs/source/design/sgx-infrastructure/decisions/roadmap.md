@@ -78,4 +78,4 @@ any fully fledged Corda integration, so we should finish this ASAP.
 
 ## Appendix: Proposed roadmap breakdown
 
-![Dynamic code loading first](roadmap-dynamic.jpg)
+![Dynamic code loading first](roadmap.png)
